@@ -1,11 +1,13 @@
 package library_managment.Service;
 
-import library_managment.Model.Member;
-import library_managment.Repository.MemberRepository;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import library_managment.Exception.MemberNotFoundException;
+import library_managment.Model.Member;
+import library_managment.Repository.MemberRepository;
 
 @Service
 public class MemberService {
@@ -18,7 +20,8 @@ public class MemberService {
     }
 
     public Member getMemberById(Long id) {
-        return memberRepository.findById(id).orElse(null);
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new MemberNotFoundException("Member not found with id: " + id));
     }
 
     public Member createMember(Member member) {
@@ -26,10 +29,8 @@ public class MemberService {
     }
 
     public Member updateMember(Long id, Member updatedMember) {
-        Member member = memberRepository.findById(id).orElse(null);
-        if (member == null) {
-            return null;
-        }
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new MemberNotFoundException("Member not found with id: " + id));
         member.setName(updatedMember.getName());
         member.setEmail(updatedMember.getEmail());
         return memberRepository.save(member);

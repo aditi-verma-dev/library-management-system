@@ -1,11 +1,13 @@
  package library_managment.Service;
 
-import library_managment.Model.Book;
-import library_managment.Repository.BookRepository;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import library_managment.Exception.BookNotFoundException;
+import library_managment.Model.Book;
+import library_managment.Repository.BookRepository;
 
 @Service
 public class BookService {
@@ -18,7 +20,8 @@ public class BookService {
     }
 
     public Book getBookById(Long id) {
-        return bookRepository.findById(id).orElse(null);
+        return bookRepository.findById(id)
+                .orElseThrow(() -> new BookNotFoundException("Book not found with id: " + id));
     }
 
     public Book createBook(Book book) {
@@ -26,10 +29,8 @@ public class BookService {
     }
 
     public Book updateBook(Long id, Book updatedBook) {
-        Book book = bookRepository.findById(id).orElse(null);
-        if (book == null) {
-            return null;
-        }
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new BookNotFoundException("Book not found with id: " + id));
         book.setTitle(updatedBook.getTitle());
         book.setAuthor(updatedBook.getAuthor());
         book.setIsbn(updatedBook.getIsbn());
